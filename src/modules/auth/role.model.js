@@ -1,4 +1,3 @@
-// src/modules/auth/role.model.js
 const { DataTypes } = require('sequelize')
 const sequelize = require('../../config/db.config')
 
