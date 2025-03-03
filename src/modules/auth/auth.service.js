@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const User = require('../user/user.model')
-const { producer } = require('../../config/kafka.config')
 
 const SALT_ROUNDS = 10
 
@@ -11,26 +10,12 @@ exports.register = async ({ name, email, password }) => {
   if (existing) throw new Error('Email already in use')
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
-  const user = await User.create({ name, email, passwordHash })
 
-  // Generate email verification token (JWT)
-  const emailToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: '24h',
-  })
-
-  // Emit Kafka event for email verification
-  await producer.send({
-    topic: 'USER_REGISTERED',
-    messages: [
-      {
-        key: user.id.toString(),
-        value: JSON.stringify({
-          userId: user.id,
-          email: user.email,
-          emailToken,
-        }),
-      },
-    ],
+  const user = await User.create({
+    name,
+    email,
+    passwordHash,
+    isVerified: true,
   })
 
   return user
@@ -71,27 +56,25 @@ exports.forgotPassword = async (email) => {
   if (!user) throw new Error('No user found with that email.')
 
   const resetToken = crypto.randomBytes(32).toString('hex')
-  // In production, store a hash of resetToken with expiration in DB.
-  // For simplicity, we embed it in a JWT:
   const resetJWT = jwt.sign(
     { userId: user.id, token: resetToken },
     process.env.JWT_SECRET,
     { expiresIn: '1h' }
   )
 
-  await producer.send({
-    topic: 'PASSWORD_RESET',
-    messages: [
-      {
-        key: user.id.toString(),
-        value: JSON.stringify({
-          userId: user.id,
-          email: user.email,
-          resetToken: resetJWT,
-        }),
-      },
-    ],
-  })
+  //await producer.send({
+  //  topic: 'PASSWORD_RESET',
+  //  messages: [
+  //    {
+  //      key: user.id.toString(),
+  //      value: JSON.stringify({
+  //        userId: user.id,
+  //        email: user.email,
+  //        resetToken: resetJWT,
+  //      }),
+  //    },
+  //  ],
+  //})
 }
 
 exports.resetPassword = async (token, newPassword) => {

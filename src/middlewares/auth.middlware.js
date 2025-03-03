@@ -1,4 +1,3 @@
-// Example modification to auth.middleware.js
 const jwt = require('jsonwebtoken')
 const User = require('../modules/user/user.model')
 const Role = require('../modules/auth/role.model')
@@ -18,7 +17,7 @@ module.exports = async function verifyToken(req, res, next) {
     req.user = {
       id: user.id,
       email: user.email,
-      roles: user.Roles,
+      roles: user.Roles.map((role) => role.name),
     }
     next()
   })
