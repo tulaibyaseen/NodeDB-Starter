@@ -4,7 +4,7 @@
 const bcrypt = require('bcrypt')
 module.exports = {
   up: async (queryInterface) => {
-    const passwordHash = bcrypt.hashSync('password123', 10)
+    const passwordHash = bcrypt.hashSync('123456', 10)
     const now = new Date()
 
     await queryInterface.bulkInsert(
