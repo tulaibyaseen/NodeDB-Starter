@@ -12,8 +12,8 @@ public/store-media/*
 public/org-media/*
 public/device/*
 
-err.log
-log.log
+error.log
+combined.log
 deployment-files
 coverage*
 build/

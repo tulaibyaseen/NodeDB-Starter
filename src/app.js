@@ -12,8 +12,8 @@ const authRoutes = require('./modules/auth/auth.routes')
 const userRoutes = require('./modules/user/user.routes')
 
 // Swagger UI setup
-const swaggerUi = require('swagger-ui-express')
-const openapiDocument = require('../docs/openapi.json')
+//const swaggerUi = require('swagger-ui-express')
+//const openapiDocument = require('../docs/openapi.json')
 
 const app = express()
 
@@ -22,7 +22,7 @@ app.use(helmet())
 app.use(json())
 app.use(urlencoded({ extended: true }))
 app.use(morgan('dev'))
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiDocument))
+//app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiDocument))
 
 // Routes
 app.use('/api/v1/auth', authRoutes)
